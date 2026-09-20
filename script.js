@@ -941,8 +941,8 @@ function initNumerologyForm() {
 
 // Điền URL + anon key sau khi tạo project tại supabase.com
 // Xem hướng dẫn đầy đủ trong file HUONG_DAN_DEPLOY.md
-const SUPABASE_URL      = '';
-const SUPABASE_ANON_KEY = '';
+const SUPABASE_URL      = 'https://cgfihwtnpvudcqwoukkg.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNnZmlod3RucHZ1ZGNxd291a2tnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4OTM4ODksImV4cCI6MjEwNTQ2OTg4OX0.WAoBhkvmGyPcLdV-rRd5YCtPh7ivdOwhm798hULVkws';
 
 const _sb = (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase)
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)

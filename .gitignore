@@ -6,3 +6,6 @@ node_modules/
 bao-cao-premium-test.pdf
 bao-cao-than-so-hoc-dang-bao-ngoc.pdf
 bao-cao-tu-vi-dang-bao-ngoc.pdf
+
+.vercel
+supabase/.temp/
