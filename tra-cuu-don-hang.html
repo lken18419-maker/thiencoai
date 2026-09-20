@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tra Cứu Đơn Hàng | Thiên Cơ AI</title>
+<meta name="description" content="Nhập mã đơn hàng để kiểm tra trạng thái thanh toán và tải file PDF thần số học sau khi đơn được xác nhận.">
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+  .lookup-section { padding: 120px 20px 100px; min-height: 70vh; }
+  .lookup-box {
+    max-width: 520px; margin: 0 auto; background: var(--card); border: 1px solid var(--card-border);
+    border-radius: var(--radius); padding: 36px 30px; position: relative; z-index: 1;
+  }
+  .lookup-box h1 { font-size: 1.4rem; margin-bottom: 8px; text-align: center; }
+  .lookup-box .sub { color: var(--text-dim); font-size: 0.88rem; text-align: center; margin-bottom: 24px; }
+  .lookup-form { display: flex; gap: 10px; margin-bottom: 8px; }
+  .lookup-form input {
+    flex: 1; background: rgba(58,90,64,0.05); border: 1px solid rgba(58,90,64,0.12);
+    color: var(--text); border-radius: 12px; padding: 12px 16px; font-size: 0.95rem;
+    font-family: inherit; outline: none; text-transform: uppercase;
+  }
+  .lookup-form input:focus { border-color: rgba(58,90,64,0.5); }
+  .lookup-form button {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #fff; border: none;
+    border-radius: 12px; padding: 0 22px; font-weight: 700; font-size: 0.9rem; cursor: pointer; font-family: inherit;
+  }
+  .lookup-err { color: #f87171; font-size: 0.82rem; min-height: 1.2rem; margin-top: 6px; text-align: center; }
+  .lookup-result { margin-top: 24px; display: none; }
+  .lookup-result.show { display: block; }
+  .status-line { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .status-dot.pending { background: var(--gold); }
+  .status-dot.paid { background: #4ade80; }
+  .status-dot.failed { background: #f87171; }
+  .lr-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(58,90,64,0.06); font-size: 0.88rem; }
+  .lr-row span:first-child { color: var(--text-dim); }
+  .lr-row span:last-child { font-weight: 600; text-align: right; }
+  .lr-note { margin-top: 16px; padding: 14px 16px; border-radius: 12px; font-size: 0.85rem; line-height: 1.6; }
+  .lr-note.pending { background: rgba(58,90,64,0.08); border: 1px solid rgba(58,90,64,0.2); color: var(--text-dim); }
+  .lr-note.failed { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); color: var(--text-dim); }
+  .lr-note.fallback { background: rgba(221,161,94,0.1); border: 1px solid rgba(221,161,94,0.25); color: var(--text-dim); }
+</style>
+</head>
+<body>
+
+<div class="stars-bg"></div>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="index.html#top" class="nav-logo">
+      <img src="logo.png" alt="Thiên Cơ AI" class="logo-icon">
+      <span class="logo-text">Thiên Cơ <span>AI</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html#top">Trang chủ</a></li>
+      <li><a href="index.html#numerology-pricing">Bảng giá</a></li>
+      <li><a href="index.html#contact">Liên hệ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="lookup-section">
+  <div class="lookup-box">
+    <h1>🔍 Tra Cứu Đơn Hàng</h1>
+    <p class="sub">Nhập mã đơn hàng (đã nhận sau khi thanh toán) để kiểm tra trạng thái và tải file PDF.</p>
+    <form class="lookup-form" id="lookupForm">
+      <input type="text" id="orderInput" placeholder="VD: TCA123456" required>
+      <button type="submit">Tra cứu</button>
+    </form>
+    <div class="lookup-err" id="lookupErr"></div>
+
+    <div class="lookup-result" id="lookupResult"></div>
+  </div>
+</section>
+
+<script src="numerology-engine.js"></script>
+<script src="numerology-pdf.js"></script>
+<script>
+const SUPABASE_URL      = '';
+const SUPABASE_ANON_KEY = '';
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const _sb = (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase)
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+
+function fmtVND(n) { return Number(n || 0).toLocaleString('vi-VN') + ' ₫'; }
+function fmtDate(s) {
+  if (!s) return '—';
+  const d = new Date(s);
+  return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    + ' ' + d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+}
+const statusLabel = { pending: 'Chờ xác nhận thanh toán', paid: 'Đã thanh toán', failed: 'Thất bại' };
+
+async function lookupOrder(orderCode) {
+  const errEl = document.getElementById('lookupErr');
+  const resultEl = document.getElementById('lookupResult');
+  errEl.textContent = '';
+  resultEl.classList.remove('show');
+
+  if (!_sb) {
+    errEl.textContent = 'Chưa cấu hình Supabase — không thể tra cứu đơn hàng thật ở chế độ demo này.';
+    return;
+  }
+
+  const { data, error } = await _sb.from('subscriptions').select('*').eq('order_code', orderCode).maybeSingle();
+  if (error || !data) {
+    errEl.textContent = 'Không tìm thấy đơn hàng với mã này. Kiểm tra lại mã đơn hoặc liên hệ hỗ trợ.';
+    return;
+  }
+  renderOrder(data);
+}
+
+// Gói thần số học → tải PDF ngay tại trang này. Gói tử vi → đưa về index.html
+// để dùng lại engine + phần render báo cáo chi tiết đã có sẵn ở đó.
+const NUMEROLOGY_PDF_PLANS = new Set(['Gói Cá Nhân', 'Gói Yêu Thương', 'Gói Gia Đình']);
+
+function renderOrder(order) {
+  const resultEl = document.getElementById('lookupResult');
+  const isNumerologyPdf = NUMEROLOGY_PDF_PLANS.has(order.plan);
+  let noteHtml = '';
+  let actionHtml = '';
+
+  if (order.status === 'paid') {
+    if (isNumerologyPdf && order.payload && order.payload.name && order.payload.birthdate) {
+      const result = computeNumerology(order.payload.name, order.payload.birthdate);
+      window.__orderResult = result;
+      window.__orderPlan = order.plan;
+      noteHtml = `<div class="lr-note" style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.25)">✅ Đơn đã được xác nhận thanh toán. Bạn có thể tải file PDF ngay bên dưới.</div>`;
+      actionHtml = `<button type="button" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:14px" onclick="printNumerologyPdf(buildNumerologyPremiumPrintHtml(window.__orderResult, window.__orderPlan))">📄 Tải File PDF Ngay</button>`;
+    } else if (!isNumerologyPdf && order.payload && order.payload.birthtime) {
+      noteHtml = `<div class="lr-note" style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.25)">✅ Đơn đã được xác nhận thanh toán. Bấm nút bên dưới để xem báo cáo chi tiết.</div>`;
+      actionHtml = `<a href="index.html?tuvi_order=${encodeURIComponent(order.order_code)}" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:14px;text-decoration:none;box-sizing:border-box;display:flex;">📖 Xem Báo Cáo Chi Tiết Ngay</a>`;
+    } else {
+      noteHtml = `<div class="lr-note fallback">✅ Đơn đã được xác nhận thanh toán. Vì đơn này chưa gắn thông tin để tự tính lại báo cáo, vui lòng liên hệ Zalo/SĐT bạn đã cung cấp để nhận báo cáo.</div>`;
+    }
+  } else if (order.status === 'pending') {
+    noteHtml = `<div class="lr-note pending">⏳ Đơn đang chờ xác nhận thanh toán. Sau khi chuyển khoản đúng nội dung là mã đơn <strong>${order.order_code}</strong>, đội ngũ sẽ duyệt trong vài giờ — quay lại trang này để kiểm tra hoặc xem báo cáo.</div>`;
+  } else {
+    noteHtml = `<div class="lr-note failed">❌ Đơn không thành công. Vui lòng liên hệ hỗ trợ hoặc tạo đơn mới ở <a href="index.html#pricing" style="color:var(--gold)">bảng giá</a>.</div>`;
+  }
+
+  resultEl.innerHTML = `
+    <div class="status-line">
+      <span class="status-dot ${order.status}"></span>
+      <strong>${statusLabel[order.status] || order.status}</strong>
+    </div>
+    <div class="lr-row"><span>Mã đơn</span><span>${order.order_code}</span></div>
+    <div class="lr-row"><span>Khách hàng</span><span>${order.name}</span></div>
+    <div class="lr-row"><span>Gói</span><span>${order.plan}</span></div>
+    <div class="lr-row"><span>Số tiền</span><span>${fmtVND(order.amount)}</span></div>
+    <div class="lr-row"><span>Thời gian tạo</span><span>${fmtDate(order.created_at)}</span></div>
+    ${noteHtml}
+    ${actionHtml}
+  `;
+  resultEl.classList.add('show');
+}
+
+document.getElementById('lookupForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const code = document.getElementById('orderInput').value.trim().toUpperCase();
+  if (code) lookupOrder(code);
+});
+
+// Tự động tra cứu nếu link có sẵn ?order=XXXX (link được gửi ngay sau khi đặt hàng)
+const params = new URLSearchParams(location.search);
+const prefillOrder = params.get('order');
+if (prefillOrder) {
+  document.getElementById('orderInput').value = prefillOrder.toUpperCase();
+  lookupOrder(prefillOrder.toUpperCase());
+}
+</script>
+</body>
+</html>

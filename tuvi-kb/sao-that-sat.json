@@ -1,0 +1,44 @@
+{
+  "_meta": { "trang_thai_duyet": "BẢN NHÁP — nhân rộng theo mẫu sao Tử Vi đã duyệt", "ngay_tao": "2026-09-10" },
+  "ten_sao": "Thất Sát",
+  "ngu_hanh": "Kim",
+  "nhom": "Nam Đẩu (vòng Thiên Phủ)",
+  "tinh_chat_co_ban": {
+    "noi_dung": "Chủ về quyền uy, sức mạnh, tính quyết đoán và tinh thần tiên phong dám đương đầu thử thách.",
+    "muc_tin_cay": "cao",
+    "nguon_tham_khao": ["fptshop.com.vn — \"Mệnh Thất Sát là gì?\"", "tierra.vn"]
+  },
+  "dac_diem_tinh_cach_khi_thu_menh": {
+    "noi_dung": "Lãnh đạo, quyết định nhanh, trách nhiệm cao, thích chinh phục thử thách, cạnh tranh tốt, hợp môi trường áp lực cao. Tính cách hơi gai góc, mạnh mẽ, nói to, thiên về hành động hơn lời nói.",
+    "muc_tin_cay": "cao",
+    "nguon_tham_khao": ["tierra.vn — \"Sao Thất Sát\""]
+  },
+  "trang_thai": {
+    "mieu": {
+      "vi_tri_chi": ["Dần", "Thân", "Tý", "Ngọ"],
+      "muc_tin_cay_vi_tri": "trung bình — 1 nguồn tổng hợp",
+      "y_nghia": "Sức mạnh, quyền uy phát huy tối đa, khả năng lãnh đạo và đột phá lớn nhất, dễ đạt thành công vượt bậc trong hoàn cảnh khó khăn.",
+      "nguon_tham_khao": ["kết quả tổng hợp WebSearch — CẦN đối chiếu thêm"]
+    },
+    "vuong": { "vi_tri_chi": null, "muc_tin_cay_vi_tri": "CẦN KIỂM TRA LẠI NGUỒN", "y_nghia": "Thịnh, kém Miếu.", "nguon_tham_khao": [] },
+    "dac_dia": { "vi_tri_chi": null, "muc_tin_cay_vi_tri": "CẦN KIỂM TRA LẠI NGUỒN", "y_nghia": "Thuận lợi vừa phải.", "nguon_tham_khao": [] },
+    "binh_hoa": { "vi_tri_chi": null, "muc_tin_cay_vi_tri": "CẦN KIỂM TRA LẠI NGUỒN", "y_nghia": "Trung tính.", "nguon_tham_khao": [] },
+    "ham_dia": {
+      "vi_tri_chi": null,
+      "muc_tin_cay_vi_tri": "CẦN KIỂM TRA LẠI NGUỒN",
+      "y_nghia": "Gặp sát tinh hoặc rơi Hãm địa dễ tạo biến động lớn/bất lợi trong đời — cần thận trọng hơn với các quyết định liều lĩnh.",
+      "nguon_tham_khao": ["tierra.vn — \"Sao Thất Sát\" (mô tả tổng quát, chưa gắn Chi cụ thể)"]
+    }
+  },
+  "y_nghia_theo_cung": {
+    "menh": { "noi_dung": "Quyết đoán, dám nghĩ dám làm. Phù hợp môi trường cạnh tranh cao: kinh doanh, khởi nghiệp, quân đội, thể thao chuyên nghiệp.", "muc_tin_cay": "cao", "nguon_tham_khao": ["tierra.vn"] },
+    "tai_bach": { "noi_dung": "Cầu tài mạnh, thích việc khó/cạnh tranh cao. Nắm quyền lực tài chính, tạo sự nghiệp nơi xa, dư dả tiền bạc. Dù Miếu/Vượng/Đắc hay Hãm đều có khả năng kiếm tiền nhanh chóng; có sao Lộc đi kèm thì càng giàu sang, phú quý.", "muc_tin_cay": "cao", "nguon_tham_khao": ["thansohoconline.com — \"Sao Thất Sát cung Tài Bạch\""] },
+    "quan_loc": { "noi_dung": "Tính cách mạnh mẽ, quyết đoán, không ngại khó khăn thử thách. Thích môi trường cạnh tranh khốc liệt hơn công việc ổn định, luôn khao khát tự do để phát triển sự nghiệp.", "muc_tin_cay": "cao", "nguon_tham_khao": ["tracuutuvi.com — \"Thất Sát cung Quan Lộc\"", "tracuulasotuvi.com"] },
+    "phu_the": { "noi_dung": "Hôn nhân thường có nhiều biến động, xung khắc, đối lập. Đương số và bạn đời dễ tình cảm không thuận, có xu hướng xung đột, hình khắc, chia ly hoặc tái hôn.", "muc_tin_cay": "trung bình-cao", "nguon_tham_khao": ["tracuutuvi.com — \"Thất Sát cung Phu Thê\""] }
+  },
+  "to_hop_sao_di_kem": [
+    { "to_hop": "Sát Phá Tham (Thất Sát-Phá Quân-Tham Lang, tam hợp)", "y_nghia": "Xem thêm sao-tham-lang.json — tên gọi phổ biến, CẦN KIỂM TRA LẠI NGUỒN cho mô tả đầy đủ.", "muc_tin_cay": "trung bình", "nguon_tham_khao": [] },
+    { "to_hop": "Sát Phá Liêm Tham (Thất Sát-Phá Quân-Liêm Trinh-Tham Lang tại 4 cung Mệnh/Tài Bạch/Quan Lộc/Thiên Di)", "y_nghia": "Xem thêm sao-liem-trinh.json.", "muc_tin_cay": "trung bình", "nguon_tham_khao": [] }
+  ],
+  "_do_tin_cay_va_can_bo_sung": { "khong_the_xac_dinh_can_ban_cung_cap_them": ["Danh sách Chi cho Vượng/Đắc/Bình/Hãm."] }
+}

@@ -1,0 +1,8 @@
+node_modules/
+.env
+*.log
+
+# File PDF mẫu sinh ra khi test cục bộ (chứa dữ liệu cá nhân dùng để test)
+bao-cao-premium-test.pdf
+bao-cao-than-so-hoc-dang-bao-ngoc.pdf
+bao-cao-tu-vi-dang-bao-ngoc.pdf

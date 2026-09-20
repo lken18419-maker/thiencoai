@@ -1,0 +1,43 @@
+{
+  "_meta": { "trang_thai_duyet": "BẢN NHÁP — nhân rộng theo mẫu sao Tử Vi đã duyệt", "ngay_tao": "2026-09-10" },
+  "ten_sao": "Liêm Trinh",
+  "ngu_hanh": "Hỏa",
+  "nhom": "Bắc Đẩu (vòng Tử Vi)",
+  "tinh_chat_co_ban": {
+    "noi_dung": "Chính tinh mang tính chất phức tạp và mâu thuẫn nhất trong 14 sao — vừa cương nghị, chính trực, vừa nóng nảy, dễ sa vào cực đoan. Chủ về quyền uy, quan lộc, hình ngục, đào hoa.",
+    "muc_tin_cay": "cao",
+    "nguon_tham_khao": ["thansohoconline.com — \"Sao Liêm Trinh\"", "tracuulasotuvi.com"]
+  },
+  "dac_diem_tinh_cach_khi_thu_menh": {
+    "noi_dung": "Ở vị trí thuận lợi: thông minh, chính nghĩa, tư duy logic, nguyên tắc rõ ràng. Nội tâm phức tạp, dễ cô đơn dù bên ngoài mạnh mẽ tự tin; tình cảm dễ vướng éo le, thị phi.",
+    "muc_tin_cay": "cao",
+    "nguon_tham_khao": ["tinhte.vn — \"Luận giải Ý nghĩa Sao Liêm Trinh ở cung Mệnh\""]
+  },
+  "trang_thai": {
+    "mieu": {
+      "vi_tri_chi": ["Thìn", "Tuất"],
+      "muc_tin_cay_vi_tri": "trung bình — 1 nguồn (horos.vn)",
+      "y_nghia": "Khi Liêm Trinh nhập Miếu, gia tăng tính đào hoa, duyên dáng, đồng thời phát huy tối đa sự chính trực, quyền uy.",
+      "nguon_tham_khao": ["horos.vn"]
+    },
+    "vuong": { "vi_tri_chi": null, "muc_tin_cay_vi_tri": "CẦN KIỂM TRA LẠI NGUỒN", "y_nghia": "Thịnh, kém Miếu.", "nguon_tham_khao": [] },
+    "dac_dia": { "vi_tri_chi": null, "muc_tin_cay_vi_tri": "CẦN KIỂM TRA LẠI NGUỒN", "y_nghia": "Thuận lợi vừa phải.", "nguon_tham_khao": [] },
+    "binh_hoa": { "vi_tri_chi": null, "muc_tin_cay_vi_tri": "CẦN KIỂM TRA LẠI NGUỒN", "y_nghia": "Trung tính.", "nguon_tham_khao": [] },
+    "ham_dia": {
+      "vi_tri_chi": null,
+      "muc_tin_cay_vi_tri": "CẦN KIỂM TRA LẠI NGUỒN",
+      "y_nghia": "Dễ nghèo khó, túng quẫn, liều lĩnh; dễ vướng thị phi, kiện tụng, phần \"nóng nảy cực đoan\" của sao bộc lộ rõ hơn phần \"chính trực\".",
+      "nguon_tham_khao": ["tracuutuvi.com — \"Sao Liêm Trinh | Chủ Về Sự Nghèo Khó, Túng Quẫn, Liều Lĩnh\" (mô tả trạng thái bất lợi nói chung, chưa gắn Chi cụ thể)"]
+    }
+  },
+  "y_nghia_theo_cung": {
+    "menh": { "noi_dung": "Tư duy logic, nguyên tắc sống rõ ràng. Phù hợp luật pháp, hành chính, quân đội, quản lý cấp cao.", "muc_tin_cay": "cao", "nguon_tham_khao": ["tuvikhoahoc.vn"] },
+    "tai_bach": { "noi_dung": "Nghiêm túc trong tiền bạc, ghét mập mờ. Vị trí tốt: tài chính ổn định, rõ ràng. Vị trí xấu: dễ vì chuyện riêng mà \"đi đường tắt\" hoặc thỏa hiệp giao kết không minh bạch, dễ va chạm lợi ích, thậm chí tranh chấp/kiện tụng.", "muc_tin_cay": "trung bình-cao", "nguon_tham_khao": ["tracuutuvi.com — \"Liêm Trinh cung Tài Bạch\"", "horos.vn"] },
+    "quan_loc": { "noi_dung": "Phát huy mạnh vì đây là sao chủ về quyền lực/chức vụ. Thành công trong quân sự, chính trị, nghề kỷ luật cao; khả năng lãnh đạo, quản lý, chỉ huy hoặc làm chủ doanh nghiệp. Nhập miếu + cát tinh hội chiếu: phú quý song toàn.", "muc_tin_cay": "trung bình-cao", "nguon_tham_khao": ["tracuulasotuvi.com — \"Liêm Trinh Cung Quan Lộc\"", "tuvinamphai.vn"] },
+    "phu_the": { "noi_dung": "Đường hôn nhân nhiều thử thách, dễ duyên nợ trắc trở hoặc kết hôn muộn. Bạn đời cá tính mạnh, nghiêm khắc, chính trực nhưng đời sống hôn nhân dễ thăng trầm, bất hòa.", "muc_tin_cay": "trung bình-cao", "nguon_tham_khao": ["tierra.vn — \"Liêm Trinh cung Phu Thê\"", "tracuulasotuvi.com"] }
+  },
+  "to_hop_sao_di_kem": [
+    { "to_hop": "Sát Phá Liêm Tham (Thất Sát, Phá Quân, Liêm Trinh, Tham Lang tọa thủ 4 cung Mệnh/Tài Bạch/Quan Lộc/Thiên Di)", "y_nghia": "Cách cục đặc trưng bởi tính quyết đoán, mạnh mẽ, đầy biến động — một cách cục có tên gọi được nhắc khá rộng rãi.", "muc_tin_cay": "trung bình", "nguon_tham_khao": ["tracuulasotuvi.com — \"Sao Liêm Trinh trong tử vi đẩu số\""] }
+  ],
+  "_do_tin_cay_va_can_bo_sung": { "khong_the_xac_dinh_can_ban_cung_cap_them": ["Danh sách Chi cho Vượng/Đắc/Bình/Hãm.", "Điều kiện hình thành đầy đủ của Sát Phá Liêm Tham theo văn bản gốc."] }
+}

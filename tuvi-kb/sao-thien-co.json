@@ -1,0 +1,52 @@
+{
+  "_meta": {
+    "trang_thai_duyet": "BẢN NHÁP — nhân rộng theo mẫu sao Tử Vi đã duyệt",
+    "ngay_tao": "2026-09-10"
+  },
+  "ten_sao": "Thiên Cơ",
+  "ngu_hanh": "Mộc",
+  "nhom": "Bắc Đẩu (vòng Tử Vi)",
+  "tinh_chat_co_ban": {
+    "noi_dung": "Thiện tinh, chủ về trí tuệ, mưu lược, khả năng ứng biến — được ví như quân sư, người đứng sau hoạch định chứ không xông pha tuyến đầu.",
+    "muc_tin_cay": "cao",
+    "nguon_tham_khao": ["bachhoaxanh.com — \"Sao Thiên Cơ là gì?\"", "horos.vn — \"Sao Thiên Cơ\"", "tracuutuvi.com — \"Sao Thiên Cơ\""]
+  },
+  "dac_diem_tinh_cach_khi_thu_menh": {
+    "noi_dung": "Thông minh, nhạy bén, giỏi phân tích, luôn có phương án dự phòng; đặc trưng \"biến động\" — đầu óc luôn suy nghĩ, khó ở yên một hướng quá lâu. Dễ đa nghi, lo âu, hay thay đổi quyết định.",
+    "muc_tin_cay": "cao",
+    "nguon_tham_khao": ["tracuutuvi.com — \"Thiên Cơ cung Mệnh\""]
+  },
+  "trang_thai": {
+    "_ghi_chu_phuong_phap": "Xem ghi chú phương pháp chung ở file sao-tu-vi.json — không có bảng Miếu/Vượng/Đắc/Bình/Hãm đầy đủ đáng tin cậy, chỉ giữ phần có nguồn.",
+    "mieu": {
+      "vi_tri_chi": ["Thìn", "Tuất", "Mão", "Dậu"],
+      "muc_tin_cay_vi_tri": "trung bình — 1 nguồn tổng hợp, chưa đối chiếu chéo",
+      "y_nghia": "Thông minh sắc bén, mưu lược phát huy tối đa, dễ thành công trong vai trò tham mưu/cố vấn cấp cao.",
+      "nguon_tham_khao": ["bachhoaxanh.com — \"Sao Thiên Cơ khi tọa ở các cung\""]
+    },
+    "vuong": { "vi_tri_chi": null, "muc_tin_cay_vi_tri": "CẦN KIỂM TRA LẠI NGUỒN", "y_nghia": "Thịnh nhưng kém Miếu.", "nguon_tham_khao": [] },
+    "dac_dia": { "vi_tri_chi": null, "muc_tin_cay_vi_tri": "CẦN KIỂM TRA LẠI NGUỒN", "y_nghia": "Thuận lợi vừa phải.", "nguon_tham_khao": [] },
+    "binh_hoa": { "vi_tri_chi": null, "muc_tin_cay_vi_tri": "CẦN KIỂM TRA LẠI NGUỒN", "y_nghia": "Trung tính, phụ thuộc sao đi kèm.", "nguon_tham_khao": [] },
+    "ham_dia": {
+      "vi_tri_chi": null,
+      "muc_tin_cay_vi_tri": "CẦN KIỂM TRA LẠI NGUỒN",
+      "y_nghia": "Dễ lao tâm khổ tứ, suy nghĩ nhiều thành lo âu/mất ngủ, quyết định thiếu nhất quán, gia đạo dễ bất ổn.",
+      "nguon_tham_khao": ["horos.vn — mô tả tổng quát, chưa có danh sách Chi cụ thể"]
+    }
+  },
+  "y_nghia_theo_cung": {
+    "menh": { "noi_dung": "Thông minh, hiếu học, giỏi lập kế hoạch nhưng dễ lo âu, đa nghi, hay thay đổi. Phù hợp công việc tham mưu, nghiên cứu, kỹ thuật, giáo dục.", "muc_tin_cay": "cao", "nguon_tham_khao": ["tracuutuvi.com"] },
+    "tai_bach": { "noi_dung": "Tài lộc đến từ trí tuệ, tính toán, mưu lược — hợp nghề kỹ thuật, cố vấn. Tiền bạc thường xuyên biến động, lúc có lúc không, cần linh hoạt trong đầu tư mới giữ được tiền.", "muc_tin_cay": "trung bình-cao", "nguon_tham_khao": ["thansohoconline.com — \"Thiên Cơ Cung Tài Bạch\"", "horos.vn", "tracuutuvi.com"] },
+    "quan_loc": { "noi_dung": "Sự nghiệp khó ổn định, nhiều biến động, thay đổi công việc/vị trí. Ở Miếu/Vượng có thể giàu sang nhưng đường công danh không quá rạng rỡ.", "muc_tin_cay": "trung bình", "nguon_tham_khao": ["tracuulasotuvi.com — \"Thiên Cơ cung Quan Lộc\"", "tracuutuvi.com"] },
+    "phu_the": { "noi_dung": "Bạn đời thông minh, khéo léo, hoạt bát nhưng hay lo nghĩ, đa nghi. Hôn nhân dễ có biến động, có thể kết hôn muộn hoặc trải qua sóng gió, cần nhường nhịn và thấu hiểu.", "muc_tin_cay": "trung bình", "nguon_tham_khao": ["kết quả tổng hợp công khai — CẦN đối chiếu thêm nguồn gốc"] }
+  },
+  "to_hop_sao_di_kem": [
+    { "to_hop": "Thiên Cơ + Cự Môn (đồng cung)", "y_nghia": "Tăng tính đa nghi, giỏi phân tích/hùng biện nhưng dễ thị phi — CẦN KIỂM TRA LẠI NGUỒN, chỉ nghe nhắc tên tổ hợp chưa có mô tả đầy đủ đáng tin cậy.", "muc_tin_cay": "thấp", "nguon_tham_khao": [] }
+  ],
+  "_do_tin_cay_va_can_bo_sung": {
+    "khong_the_xac_dinh_can_ban_cung_cap_them": [
+      "Bảng đầy đủ Vượng/Đắc/Bình/Hãm theo từng Chi.",
+      "Tổ hợp sao đi kèm phổ biến (Thiên Cơ + Cự Môn, + Thiên Lương, + Thái Âm) — chỉ có tên gọi, chưa có nguồn mô tả đầy đủ."
+    ]
+  }
+}

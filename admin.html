@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản trị — Thiên Cơ AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+  body { overflow-x: hidden; }
+
+  /* ===== LOGIN ===== */
+  #login-screen {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px;
+  }
+  .login-box {
+    background: var(--bg2); border: 1px solid var(--card-border);
+    border-radius: 20px; padding: 44px 36px; width: 360px; max-width: 100%;
+    text-align: center; box-shadow: var(--shadow), var(--glow);
+  }
+  .login-box .logo-icon { width: 52px; height: 52px; margin: 0 auto 16px; }
+  .login-box h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 6px; }
+  .login-box p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 24px; }
+  .login-box input {
+    width: 100%; background: rgba(58,90,64,0.05); border: 1px solid rgba(58,90,64,0.1);
+    color: var(--text); border-radius: 12px; padding: 12px 16px; font-size: 0.95rem;
+    font-family: inherit; margin-bottom: 14px; outline: none; transition: all 0.2s;
+  }
+  .login-box input:focus { border-color: rgba(232,184,75,0.5); box-shadow: 0 0 0 3px rgba(232,184,75,0.1); }
+  .login-err { color: #f87171; font-size: 0.82rem; min-height: 1.1rem; margin-top: 4px; }
+
+  /* ===== LAYOUT ===== */
+  #app { display: none; }
+  #app.open { display: flex; }
+  .admin-shell { position: relative; z-index: 1; display: flex; min-height: 100vh; width: 100%; }
+
+  .sidebar {
+    width: 230px; flex-shrink: 0; background: rgba(58,90,64,0.04);
+    border-right: 1px solid rgba(58,90,64,0.06);
+    display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh;
+  }
+  .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 20px 18px; border-bottom: 1px solid rgba(58,90,64,0.06); }
+  .sidebar-brand .logo-icon { width: 36px; height: 36px; }
+  .sidebar-brand strong { font-size: 0.95rem; }
+  .sidebar-brand small { display: block; font-size: 0.7rem; color: var(--text-dim); }
+  .sidebar-nav { flex: 1; padding: 12px 0; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 12px 18px; cursor: pointer;
+    color: var(--text-dim); font-size: 0.88rem; border-left: 3px solid transparent; transition: all 0.15s;
+  }
+  .nav-item:hover { color: var(--text); background: rgba(58,90,64,0.03); }
+  .nav-item.active { color: var(--gold); background: rgba(232,184,75,0.08); border-left-color: var(--gold); }
+  .sidebar-footer { padding: 16px 18px; border-top: 1px solid rgba(58,90,64,0.06); }
+  .logout-btn {
+    background: none; border: 1px solid rgba(58,90,64,0.1); color: var(--text-dim);
+    border-radius: 10px; padding: 8px 14px; font-size: 0.82rem; cursor: pointer;
+    font-family: inherit; width: 100%; transition: all 0.2s;
+  }
+  .logout-btn:hover { color: var(--gold); border-color: rgba(232,184,75,0.3); }
+
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 28px; border-bottom: 1px solid rgba(58,90,64,0.06);
+  }
+  .topbar h2 { font-size: 1.1rem; font-weight: 700; }
+  .topbar-right { display: flex; align-items: center; gap: 14px; font-size: 0.82rem; color: var(--text-dim); }
+  .refresh-btn {
+    background: rgba(58,90,64,0.05); border: 1px solid rgba(58,90,64,0.1); color: var(--text);
+    border-radius: 10px; padding: 8px 14px; font-size: 0.82rem; cursor: pointer; font-family: inherit;
+    transition: all 0.2s;
+  }
+  .refresh-btn:hover { border-color: rgba(232,184,75,0.3); color: var(--gold); }
+  .content { padding: 28px; flex: 1; overflow-x: auto; }
+
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .stat-card {
+    background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius);
+    padding: 20px;
+  }
+  .stat-card .label { font-size: 0.78rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .stat-card .value { font-size: 1.6rem; font-weight: 800; color: var(--gold); }
+
+  .table-wrap {
+    background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius);
+    overflow-x: auto;
+  }
+  table.admin-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 720px; }
+  table.admin-table th {
+    text-align: left; padding: 14px 16px; color: var(--text-dim); font-size: 0.75rem;
+    text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(58,90,64,0.08);
+    white-space: nowrap;
+  }
+  table.admin-table td { padding: 14px 16px; border-bottom: 1px solid rgba(58,90,64,0.04); vertical-align: top; }
+  table.admin-table tr:last-child td { border-bottom: none; }
+  table.admin-table tr:hover td { background: rgba(58,90,64,0.02); }
+  .cell-msg { max-width: 260px; color: var(--text-dim); white-space: pre-wrap; }
+  .empty-row td { text-align: center; color: var(--text-dim); padding: 40px 16px; }
+
+  select.status-select {
+    background: rgba(58,90,64,0.05); border: 1px solid rgba(58,90,64,0.12);
+    color: var(--text); border-radius: 8px; padding: 6px 10px; font-size: 0.8rem; font-family: inherit;
+    cursor: pointer;
+  }
+  .badge-status { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; }
+  .badge-status.pending, .badge-status.new { background: rgba(232,184,75,0.12); color: var(--gold); }
+  .badge-status.paid, .badge-status.replied { background: rgba(34,197,94,0.15); color: #4ade80; }
+  .badge-status.failed, .badge-status.closed { background: rgba(58,90,64,0.08); color: var(--text-dim); }
+
+  #toast {
+    position: fixed; bottom: 24px; right: 24px; z-index: 3000;
+    background: var(--bg2); border: 1px solid var(--card-border); color: var(--text);
+    padding: 12px 20px; border-radius: 12px; font-size: 0.85rem;
+    opacity: 0; transform: translateY(10px); transition: all 0.25s; pointer-events: none;
+    box-shadow: var(--shadow);
+  }
+  #toast.show { opacity: 1; transform: translateY(0); }
+
+  .config-warning {
+    background: rgba(255,180,23,0.1); border: 1px solid rgba(255,180,23,0.3); color: #f0b429;
+    border-radius: 12px; padding: 14px 18px; font-size: 0.85rem; margin-bottom: 20px; line-height: 1.6;
+  }
+
+  @media (max-width: 768px) {
+    .sidebar { position: fixed; z-index: 1500; transform: translateX(-100%); transition: transform 0.25s; }
+    .sidebar.open { transform: translateX(0); }
+    .content { padding: 18px; }
+    .topbar { padding: 14px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stars-bg"></div>
+
+<div id="login-screen">
+  <div class="login-box">
+    <img src="logo.png" alt="Thiên Cơ AI" class="logo-icon">
+    <h2>Quản trị Thiên Cơ AI</h2>
+    <p>Nhập mật khẩu quản trị để tiếp tục</p>
+    <input type="password" id="pw-input" placeholder="Mật khẩu" onkeydown="if(event.key==='Enter') doLogin()">
+    <button class="btn btn-primary" style="width:100%; justify-content:center" onclick="doLogin()">Đăng nhập</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="admin-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <img src="logo.png" alt="Thiên Cơ AI" class="logo-icon">
+        <div>
+          <strong>Thiên Cơ AI</strong>
+          <small>Trang quản trị</small>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-item active" onclick="showTab('overview')">📊 Tổng quan</div>
+        <div class="nav-item" onclick="showTab('subscriptions')">💳 Đăng ký gói</div>
+        <div class="nav-item" onclick="showTab('contacts')">✉️ Liên hệ</div>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="logout-btn" onclick="doLogout()">Đăng xuất</button>
+      </div>
+    </aside>
+
+    <div class="main">
+      <div class="topbar">
+        <h2 id="topbar-title">Tổng quan</h2>
+        <div class="topbar-right">
+          <span id="topbar-date"></span>
+          <button class="refresh-btn" onclick="refreshCurrent()">↻ Làm mới</button>
+        </div>
+      </div>
+
+      <div class="content">
+        <div id="config-warning" class="config-warning" style="display:none;">
+          ⚠️ Chưa cấu hình Supabase trong <code>admin.html</code> (biến <code>SUPABASE_URL</code> / <code>SUPABASE_ANON_KEY</code>).
+          Xem hướng dẫn trong <code>HUONG_DAN_DEPLOY.md</code> để kết nối dữ liệu thật.
+        </div>
+
+        <div class="tab-pane active" id="tab-overview">
+          <div class="stats-grid">
+            <div class="stat-card"><div class="label">Tổng đăng ký gói</div><div class="value" id="stat-sub-total">—</div></div>
+            <div class="stat-card"><div class="label">Đang chờ xử lý</div><div class="value" id="stat-sub-pending">—</div></div>
+            <div class="stat-card"><div class="label">Doanh thu đã xác nhận</div><div class="value" id="stat-sub-revenue">—</div></div>
+            <div class="stat-card"><div class="label">Liên hệ chưa xử lý</div><div class="value" id="stat-contact-new">—</div></div>
+          </div>
+        </div>
+
+        <div class="tab-pane" id="tab-subscriptions">
+          <div class="table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Mã đơn</th><th>Khách hàng</th><th>Liên hệ</th><th>Gói</th>
+                  <th>Chu kỳ</th><th>Số tiền</th><th>PT thanh toán</th><th>Trạng thái</th><th>Thời gian</th>
+                </tr>
+              </thead>
+              <tbody id="subscriptions-tbody"><tr class="empty-row"><td colspan="9">Đang tải…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="tab-pane" id="tab-contacts">
+          <div class="table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr><th>Tên</th><th>Liên hệ</th><th>Chủ đề</th><th>Nội dung</th><th>Trạng thái</th><th>Thời gian</th></tr>
+              </thead>
+              <tbody id="contacts-tbody"><tr class="empty-row"><td colspan="6">Đang tải…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// Điền giống với SUPABASE_URL / SUPABASE_ANON_KEY trong script.js
+const SUPABASE_URL      = '';
+const SUPABASE_ANON_KEY = '';
+// Đổi mật khẩu này trước khi deploy công khai!
+const ADMIN_PASSWORD    = 'fH60neGiw7nQ';
+
+const sb = (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase)
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+
+/* ── AUTH ── */
+function doLogin() {
+  const pw = document.getElementById('pw-input').value;
+  if (pw === ADMIN_PASSWORD) {
+    sessionStorage.setItem('tca_admin', '1');
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').classList.add('open');
+    initAdmin();
+  } else {
+    document.getElementById('login-err').textContent = 'Sai mật khẩu. Thử lại.';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+function doLogout() {
+  sessionStorage.removeItem('tca_admin');
+  location.reload();
+}
+if (sessionStorage.getItem('tca_admin') === '1') {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').classList.add('open');
+}
+
+/* ── TOAST ── */
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+/* ── FORMAT ── */
+function fmtVND(n) { return Number(n || 0).toLocaleString('vi-VN') + ' ₫'; }
+function fmtDate(s) {
+  if (!s) return '—';
+  const d = new Date(s);
+  return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    + ' ' + d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+}
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+/* ── NAV ── */
+const tabTitles = { overview: 'Tổng quan', subscriptions: 'Đăng ký gói', contacts: 'Liên hệ' };
+let currentTab = 'overview';
+let allSubscriptions = null;
+let allContacts = null;
+
+function showTab(name) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.querySelectorAll('.nav-item')[['overview', 'subscriptions', 'contacts'].indexOf(name)].classList.add('active');
+  document.getElementById('topbar-title').textContent = tabTitles[name];
+  currentTab = name;
+  if (name === 'overview') loadOverview();
+  if (name === 'subscriptions') { if (allSubscriptions === null) loadSubscriptions(); else renderSubscriptions(allSubscriptions); }
+  if (name === 'contacts') { if (allContacts === null) loadContacts(); else renderContacts(allContacts); }
+}
+function refreshCurrent() {
+  if (currentTab === 'overview') loadOverview();
+  if (currentTab === 'subscriptions') { allSubscriptions = null; loadSubscriptions(); }
+  if (currentTab === 'contacts') { allContacts = null; loadContacts(); }
+}
+
+/* ── DATA: SUBSCRIPTIONS ── */
+async function loadSubscriptions() {
+  const tbody = document.getElementById('subscriptions-tbody');
+  if (!sb) { tbody.innerHTML = '<tr class="empty-row"><td colspan="9">Chưa cấu hình Supabase.</td></tr>'; return; }
+  tbody.innerHTML = '<tr class="empty-row"><td colspan="9">Đang tải…</td></tr>';
+  const { data, error } = await sb.from('subscriptions').select('*').order('created_at', { ascending: false });
+  if (error) { tbody.innerHTML = `<tr class="empty-row"><td colspan="9">Lỗi tải dữ liệu: ${escapeHtml(error.message)}</td></tr>`; return; }
+  allSubscriptions = data || [];
+  renderSubscriptions(allSubscriptions);
+}
+function renderSubscriptions(rows) {
+  const tbody = document.getElementById('subscriptions-tbody');
+  if (!rows.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="9">Chưa có đăng ký nào.</td></tr>'; return; }
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td><strong>${escapeHtml(r.order_code)}</strong></td>
+      <td>${escapeHtml(r.name)}</td>
+      <td>${escapeHtml(r.phone)}${r.email ? '<br><span style="color:var(--text-dim);font-size:0.78rem">' + escapeHtml(r.email) + '</span>' : ''}</td>
+      <td>${escapeHtml(r.plan)}</td>
+      <td>${r.billing_cycle === 'yearly' ? 'Theo năm' : 'Theo tháng'}</td>
+      <td>${fmtVND(r.amount)}</td>
+      <td>${escapeHtml(r.payment_method || '—')}</td>
+      <td>
+        <select class="status-select" onchange="updateSubscriptionStatus('${r.id}', this.value)">
+          <option value="pending" ${r.status === 'pending' ? 'selected' : ''}>Chờ xử lý</option>
+          <option value="paid" ${r.status === 'paid' ? 'selected' : ''}>Đã thanh toán</option>
+          <option value="failed" ${r.status === 'failed' ? 'selected' : ''}>Thất bại</option>
+        </select>
+      </td>
+      <td>${fmtDate(r.created_at)}</td>
+    </tr>
+  `).join('');
+}
+async function updateSubscriptionStatus(id, status) {
+  if (!sb) return;
+  const { error } = await sb.from('subscriptions').update({ status }).eq('id', id);
+  if (error) { toast('❌ Lỗi cập nhật: ' + error.message); return; }
+  toast('✅ Đã cập nhật trạng thái');
+  const row = allSubscriptions.find(r => r.id === id);
+  if (row) row.status = status;
+}
+
+/* ── DATA: CONTACTS ── */
+async function loadContacts() {
+  const tbody = document.getElementById('contacts-tbody');
+  if (!sb) { tbody.innerHTML = '<tr class="empty-row"><td colspan="6">Chưa cấu hình Supabase.</td></tr>'; return; }
+  tbody.innerHTML = '<tr class="empty-row"><td colspan="6">Đang tải…</td></tr>';
+  const { data, error } = await sb.from('contacts').select('*').order('created_at', { ascending: false });
+  if (error) { tbody.innerHTML = `<tr class="empty-row"><td colspan="6">Lỗi tải dữ liệu: ${escapeHtml(error.message)}</td></tr>`; return; }
+  allContacts = data || [];
+  renderContacts(allContacts);
+}
+function renderContacts(rows) {
+  const tbody = document.getElementById('contacts-tbody');
+  if (!rows.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="6">Chưa có liên hệ nào.</td></tr>'; return; }
+  const topicLabel = { tuvi: 'Tư vấn lá số', hopdong: 'Hợp tuổi hôn nhân', dichvu: 'Dịch vụ chuyên gia', khac: 'Khác' };
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td><strong>${escapeHtml(r.name)}</strong></td>
+      <td>${escapeHtml(r.phone || '—')}${r.email ? '<br><span style="color:var(--text-dim);font-size:0.78rem">' + escapeHtml(r.email) + '</span>' : ''}</td>
+      <td>${escapeHtml(topicLabel[r.topic] || r.topic || '—')}</td>
+      <td class="cell-msg">${escapeHtml(r.message)}</td>
+      <td>
+        <select class="status-select" onchange="updateContactStatus('${r.id}', this.value)">
+          <option value="new" ${r.status === 'new' ? 'selected' : ''}>Mới</option>
+          <option value="replied" ${r.status === 'replied' ? 'selected' : ''}>Đã phản hồi</option>
+          <option value="closed" ${r.status === 'closed' ? 'selected' : ''}>Đã đóng</option>
+        </select>
+      </td>
+      <td>${fmtDate(r.created_at)}</td>
+    </tr>
+  `).join('');
+}
+async function updateContactStatus(id, status) {
+  if (!sb) return;
+  const { error } = await sb.from('contacts').update({ status }).eq('id', id);
+  if (error) { toast('❌ Lỗi cập nhật: ' + error.message); return; }
+  toast('✅ Đã cập nhật trạng thái');
+  const row = allContacts.find(r => r.id === id);
+  if (row) row.status = status;
+}
+
+/* ── OVERVIEW ── */
+async function loadOverview() {
+  if (!sb) return;
+  const [subsRes, contactsRes] = await Promise.all([
+    sb.from('subscriptions').select('amount,status'),
+    sb.from('contacts').select('status')
+  ]);
+  const subs = subsRes.data || [];
+  const contacts = contactsRes.data || [];
+  document.getElementById('stat-sub-total').textContent = subs.length;
+  document.getElementById('stat-sub-pending').textContent = subs.filter(s => s.status === 'pending').length;
+  document.getElementById('stat-sub-revenue').textContent = fmtVND(subs.filter(s => s.status === 'paid').reduce((a, s) => a + Number(s.amount || 0), 0));
+  document.getElementById('stat-contact-new').textContent = contacts.filter(c => c.status === 'new').length;
+}
+
+/* ── INIT ── */
+function initAdmin() {
+  document.getElementById('topbar-date').textContent =
+    new Date().toLocaleDateString('vi-VN', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
+  document.getElementById('config-warning').style.display = sb ? 'none' : 'block';
+  loadOverview();
+}
+if (sessionStorage.getItem('tca_admin') === '1') initAdmin();
+</script>
+</body>
+</html>
