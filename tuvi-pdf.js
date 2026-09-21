@@ -81,6 +81,7 @@ function buildTuviPremiumPrintHtml(r, plan) {
       <h3 class="pdf-section-title">🎯 4 Cung Trọng Yếu</h3>
       ${buildFourPalacesHtml(r)}
       <h3 class="pdf-section-title">🌀 10 Đại Vận — ${r.cuc.tenCuc}</h3>
+      ${buildDaiVanTimelineHtml(daiVanList, r.birthdate)}
       ${daiVanHtml}
       ${yearlyHtml}
       ${lifeMapHtml}

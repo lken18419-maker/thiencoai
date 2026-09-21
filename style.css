@@ -1023,6 +1023,14 @@ section { position: relative; z-index: 1; }
   .tuvi-pdf-page .nguhanh-chart-wrap svg text { fill: #333; }
   .tuvi-pdf-page .nguhanh-chart-wrap .nguhanh-poly { fill: rgba(184,137,26,0.25); stroke: #b8891a; }
   .tuvi-pdf-page .nguhanh-chart-wrap .nguhanh-axis { stroke: #ddd; }
+
+  /* Timeline Đại Vận (SVG, dùng chung web + PDF) */
+  .tuvi-pdf-page .daivan-timeline-wrap { text-align: center; margin: 8px 0 16px; page-break-inside: avoid; }
+  .tuvi-pdf-page .daivan-timeline-wrap svg text { fill: #333; }
+  .tuvi-pdf-page .daivan-timeline-wrap .daivan-seg { fill: rgba(184,137,26,0.25); stroke: #b8891a; }
+  .tuvi-pdf-page .daivan-timeline-wrap .daivan-seg-current { fill: rgba(184,137,26,0.6); }
+  .tuvi-pdf-page .daivan-timeline-wrap .daivan-now-line { stroke: #b8891a; }
+  .tuvi-pdf-page .daivan-timeline-wrap .daivan-now-label { fill: #8a6510; font-weight: 700; }
 }
 
 .nguhanh-chart-wrap { text-align: center; margin: 16px 0 24px; }
@@ -1031,6 +1039,29 @@ section { position: relative; z-index: 1; }
 .nguhanh-chart-wrap .nguhanh-axis { stroke: rgba(58,90,64,0.12); stroke-width: 1; }
 .nguhanh-chart-title { color: var(--gold); font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
 .nguhanh-chart-desc { color: var(--text-dim); font-size: 0.8rem; margin-bottom: 12px; }
+
+.daivan-timeline-wrap { text-align: center; margin: 8px 0 20px; }
+.daivan-timeline-wrap svg text { fill: var(--text-dim); font-size: 9px; }
+.daivan-timeline-wrap .daivan-seg { fill: rgba(58,90,64,0.14); stroke: var(--gold); stroke-width: 1; }
+.daivan-timeline-wrap .daivan-seg-current { fill: rgba(221,161,94,0.55); }
+.daivan-timeline-wrap .daivan-seg-label { font-weight: 700; }
+.daivan-timeline-wrap .daivan-seg-title { fill: var(--text-dim); font-size: 8px; }
+.daivan-timeline-wrap .daivan-now-line { stroke: var(--gold); stroke-width: 1.5; stroke-dasharray: 3 2; }
+.daivan-timeline-wrap .daivan-now-label { fill: var(--gold); font-weight: 700; font-size: 9px; }
+
+/* ===== BÁT TỰ (battu-engine.js) ===== */
+.battu-disclaimer { color: var(--text-dim); font-size: 0.8rem; margin-bottom: 14px; line-height: 1.6; }
+.battu-pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+.battu-pillar-card {
+  background: rgba(58,90,64,0.04); border: 1px solid var(--card-border); border-radius: 12px;
+  padding: 12px 8px; text-align: center;
+}
+.battu-pillar-nhan { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 6px; }
+.battu-pillar-can { font-weight: 700; color: var(--gold); font-size: 0.95rem; }
+.battu-pillar-chi { font-weight: 700; font-size: 0.95rem; }
+@media (max-width: 640px) {
+  .battu-pillars { grid-template-columns: repeat(2, 1fr); }
+}
 
 /* ===== SEO ARTICLE PAGES (than-so-hoc/*.html) ===== */
 .seo-breadcrumb, .seo-article-body, .seo-cta-box { position: relative; z-index: 1; }

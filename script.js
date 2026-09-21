@@ -15,8 +15,23 @@ document.addEventListener('DOMContentLoaded', () => {
   initTuviForm();
   initNumerologyForm();
   initContactForm();
+  initNatalCitySelect();
   checkTuviOrderFromUrl();
 });
+
+// Dropdown chọn tỉnh/thành (dùng để tính Cung Mọc chiêm tinh Tây phương, western-astrology.js)
+// — tự chọn sẵn theo "Nơi sinh" đã gõ, khách có thể tự sửa lại nếu đoán sai.
+function initNatalCitySelect() {
+  const select = document.getElementById('natalCity');
+  const birthplaceInput = document.getElementById('birthplace');
+  if (!select || typeof VN_CITY_COORDS === 'undefined') return;
+  select.innerHTML = Object.keys(VN_CITY_COORDS).map(c => `<option value="${c}">${c}</option>`).join('');
+  select.addEventListener('change', () => { select.dataset.userChanged = '1'; });
+  birthplaceInput.addEventListener('input', () => {
+    if (select.dataset.userChanged) return;
+    select.value = matchCityFromText(birthplaceInput.value);
+  });
+}
 
 /* ===== NAVBAR SCROLL STATE ===== */
 function initNavbar() {
@@ -372,6 +387,12 @@ function canChiThang(canNamIdx, thangAm) {
   const chiIdx = (2 + (thangAm - 1)) % 12; // Dần = tháng 1
   return { canIdx, chiIdx };
 }
+// Trụ Giờ (Bát Tự) theo quy tắc "Ngũ Thử Độn": Giáp/Kỷ -> Giáp Tý, Ất/Canh -> Bính Tý,
+// Bính/Tân -> Mậu Tý, Đinh/Nhâm -> Canh Tý, Mậu/Quý -> Nhâm Tý.
+function canChiGio(dayCanIdx, gioChiIdx) {
+  const canIdx = ((dayCanIdx % 5) * 2 + gioChiIdx) % 10;
+  return { canIdx, chiIdx: gioChiIdx };
+}
 function napAmOf(canIdx, chiIdx) {
   for (let i = 0; i < 60; i++) {
     if (i % 10 === canIdx && i % 12 === chiIdx) return NAP_AM[i];
@@ -566,7 +587,10 @@ function computeTuvi(name, birthdate, birthtime, birthplace, gender) {
     name, gender, birthdate, birthtime, birthplace, seed,
     dateFormatted: `${String(dd).padStart(2, '0')}/${String(mm).padStart(2, '0')}/${yy}`,
     lunar, canChi: canChiNamStr, canChiThang: canChiThangStr, canChiNgay: canChiNgayStr,
-    napAm, menh, chiMenh, sao, menhIdx, thanIdx, cuc, thuanLy, cungList
+    napAm, menh, chiMenh, sao, menhIdx, thanIdx, cuc, thuanLy, cungList,
+    // Dữ liệu thô dùng lại cho Bát Tự (battu-engine.js) — tránh tính lại lịch âm/Can Chi
+    // từ đầu để không bao giờ lệch với Can Chi Năm đã hiển thị ở trên.
+    canNamIdx, ngayCC, gioChiIdx
   };
 }
 
@@ -587,6 +611,12 @@ function renderResult(r) {
   document.getElementById('resHealth').textContent = buildHealthText(r.menh, r.seed);
 
   renderLaSoChart(r);
+
+  const westernEl = document.getElementById('westernBlock');
+  if (westernEl && typeof buildWesternHtml === 'function') {
+    const cityName = document.getElementById('natalCity')?.value || 'Hà Nội';
+    westernEl.innerHTML = buildWesternHtml(r.birthdate, r.birthtime, cityName);
+  }
 
   document.getElementById('starOverview').textContent = starsFromSeed(r.seed, 1);
   document.getElementById('starCareer').textContent = starsFromSeed(r.seed, 2);
@@ -678,8 +708,9 @@ function countNguHanhInChart(r) {
   return counts;
 }
 
-function buildNguHanhChartHtml(r) {
-  const counts = countNguHanhInChart(r);
+// Hàm thuần dùng chung: vẽ radar Ngũ Hành từ bất kỳ bộ đếm {Kim,Mộc,Thủy,Hỏa,Thổ}
+// nào — tái dùng cho cả lá số Tử Vi (đếm chính tinh) lẫn Bát Tự (đếm 8 ký tự Can Chi).
+function buildNguHanhChartHtmlFromCounts(counts, title, desc) {
   const maxVal = Math.max(...NGU_HANH_ORDER.map(h => counts[h]), 3);
   const cx = 110, cy = 105, R = 78;
   const angleFor = i => (Math.PI * 2 * i) / 5 - Math.PI / 2;
@@ -709,14 +740,45 @@ function buildNguHanhChartHtml(r) {
 
   return `
     <div class="nguhanh-chart-wrap">
-      <div class="nguhanh-chart-title">🌗 Biểu Đồ Ngũ Hành</div>
-      <div class="nguhanh-chart-desc">Số chính tinh thuộc mỗi hành đang hiện diện trong lá số — hành nào chiếm ưu thế sẽ ảnh hưởng đến khí chất tổng thể.</div>
+      <div class="nguhanh-chart-title">🌗 ${title}</div>
+      <div class="nguhanh-chart-desc">${desc}</div>
       <svg viewBox="0 0 220 210" width="260" height="248" xmlns="http://www.w3.org/2000/svg">
         ${ringsHtml}
         ${axesHtml}
         <polygon points="${dataPts}" class="nguhanh-poly" stroke-width="2"/>
         ${labelsHtml}
       </svg>
+    </div>`;
+}
+
+function buildNguHanhChartHtml(r) {
+  const counts = countNguHanhInChart(r);
+  return buildNguHanhChartHtmlFromCounts(counts, 'Biểu Đồ Ngũ Hành', 'Số chính tinh thuộc mỗi hành đang hiện diện trong lá số — hành nào chiếm ưu thế sẽ ảnh hưởng đến khí chất tổng thể.');
+}
+
+// Dựng khối HTML Sun/Moon/Rising cho kết quả Tử Vi miễn phí — dùng các hàm
+// thuần từ western-astrology.js (sunSign/moonSign/risingSigns/ZODIAC_MEANINGS).
+function buildWesternHtml(birthdate, birthtime, cityName) {
+  const sun = sunSign(birthdate);
+  const moon = moonSign(birthdate, birthtime);
+  const { signs: risingArr, uncertain } = risingSigns(birthdate, birthtime, cityName);
+  const risingText = risingArr.length === 2 ? `${risingArr[0]} hoặc ${risingArr[1]}` : (risingArr[0] || '—');
+  const sunM = ZODIAC_MEANINGS[sun] || {};
+  const moonM = ZODIAC_MEANINGS[moon] || {};
+  const risingNote = uncertain
+    ? `<p class="battu-disclaimer">Giờ sinh trên form chỉ biết theo khung 2 tiếng, trong khi Cung Mọc đổi cung mỗi ~2 tiếng — nên Cung Mọc thực tế nằm ở 1 trong 2 cung trên. Muốn chính xác tuyệt đối cần giờ sinh chính xác đến phút.</p>`
+    : '';
+  return `
+    <div class="result-block">
+      <div class="result-block-title">✨ Chiêm Tinh Tây Phương</div>
+      <div class="result-main">
+        <div class="result-tag"><div class="result-tag-label">Cung Mặt Trời</div><div class="result-tag-val">${sun}</div></div>
+        <div class="result-tag"><div class="result-tag-label">Cung Mặt Trăng</div><div class="result-tag-val">${moon}</div></div>
+        <div class="result-tag"><div class="result-tag-label">Cung Mọc</div><div class="result-tag-val">${risingText}</div></div>
+      </div>
+      ${risingNote}
+      <p><strong>${sunM.label || sun}:</strong> ${sunM.overview || ''}</p>
+      <p><strong>Mặt Trăng ${moon}:</strong> ${moonM.overview || ''}</p>
     </div>`;
 }
 
@@ -728,6 +790,8 @@ function renderLaSoChart(r) {
   if (legendEl) legendEl.innerHTML = buildLasoLegendHtml();
   const nguHanhEl = document.getElementById('nguHanhChart');
   if (nguHanhEl) nguHanhEl.innerHTML = buildNguHanhChartHtml(r);
+  const batTuEl = document.getElementById('batTuBlock');
+  if (batTuEl && typeof buildBatTuHtml === 'function') batTuEl.innerHTML = buildBatTuHtml(r);
 }
 
 /* =============================================
@@ -760,6 +824,13 @@ function renderNumerologyResult(r) {
   document.getElementById('numerAttitude').textContent = r.attitude;
   document.getElementById('numerMaturity').textContent = r.maturity;
   document.getElementById('numerBirthday').textContent = r.birthdayNumber;
+
+  const sunBadgeEl = document.getElementById('numerSunBadge');
+  if (sunBadgeEl && typeof sunSign === 'function') {
+    const sun = sunSign(r.birthdate);
+    const sunM = (typeof ZODIAC_MEANINGS !== 'undefined' && ZODIAC_MEANINGS[sun]) || {};
+    sunBadgeEl.innerHTML = `<div class="result-block"><div class="result-block-title">✨ Cung Mặt Trời: ${sun}</div><p>${sunM.overview || ''}</p></div>`;
+  }
 
   const meaning = NUMEROLOGY_MEANINGS[r.lifePath] || NUMEROLOGY_MEANINGS[1];
   const attitudeMeaning = NUMEROLOGY_MEANINGS[r.attitude] || NUMEROLOGY_MEANINGS[1];
@@ -1355,12 +1426,56 @@ function generateDaiVan(r) {
       return p ? `${n === 'Vô Chính Diệu' ? 'Vô Chính Diệu' : `Sao ${n}`}: ${firstSentence(p.coreMeaning[0])}` : '';
     }).filter(Boolean).join(' ');
     list.push({
+      ageStart, ageEnd,
       ageRange: `${ageStart} - ${ageEnd} tuổi`,
       title: `Đại Vận ${i + 1}: Cung ${cung.tenCung} (${cung.chiTen})`,
       text: `Giai đoạn này thiên về ${domain}. ${starText}`
     });
   }
   return { cuc: { ten: r.cuc.tenCuc }, list };
+}
+
+// Timeline trực quan 10 Đại Vận — hàm thuần trả về chuỗi HTML chứa <svg> inline,
+// cùng phong cách với buildNguHanhChartHtmlFromCounts (geometry bằng JS thuần,
+// màu sắc/style qua class CSS). birthdate (tùy chọn) dùng để tô đậm đại vận hiện tại.
+function buildDaiVanTimelineHtml(daiVanList, birthdate) {
+  const w = 640, h = 130, padX = 10, barY = 40, barH = 28;
+  const totalAge = daiVanList[daiVanList.length - 1].ageEnd;
+  const firstAge = daiVanList[0].ageStart;
+  const span = totalAge - firstAge || 1;
+  const xOf = age => padX + ((age - firstAge) / span) * (w - padX * 2);
+
+  let currentAge = null;
+  if (birthdate) {
+    const birth = new Date(birthdate + 'T00:00:00');
+    const now = new Date();
+    currentAge = now.getFullYear() - birth.getFullYear() - ((now.getMonth() < birth.getMonth() || (now.getMonth() === birth.getMonth() && now.getDate() < birth.getDate())) ? 1 : 0);
+  }
+
+  const segHtml = daiVanList.map((d, i) => {
+    const x1 = xOf(d.ageStart), x2 = xOf(d.ageEnd + 1);
+    const isCurrent = currentAge !== null && currentAge >= d.ageStart && currentAge <= d.ageEnd;
+    return `
+      <rect x="${x1}" y="${barY}" width="${Math.max(1, x2 - x1 - 2)}" height="${barH}" rx="4"
+        class="daivan-seg${isCurrent ? ' daivan-seg-current' : ''}"/>
+      <text x="${(x1 + x2) / 2}" y="${barY + barH / 2 + 4}" text-anchor="middle" class="daivan-seg-label">${d.ageStart}</text>
+      <text x="${(x1 + x2) / 2}" y="${barY + barH + 16}" text-anchor="middle" class="daivan-seg-title">${i + 1}</text>`;
+  }).join('');
+
+  const currentMarkerHtml = currentAge !== null && currentAge >= firstAge && currentAge <= totalAge
+    ? `<line x1="${xOf(currentAge)}" y1="${barY - 8}" x2="${xOf(currentAge)}" y2="${barY + barH + 8}" class="daivan-now-line"/>
+       <text x="${xOf(currentAge)}" y="${barY - 12}" text-anchor="middle" class="daivan-now-label">Hiện tại (${currentAge} tuổi)</text>`
+    : '';
+
+  return `
+    <div class="daivan-timeline-wrap">
+      <div class="nguhanh-chart-title">📈 Timeline 10 Đại Vận</div>
+      <div class="nguhanh-chart-desc">Mỗi ô là 1 giai đoạn 10 năm theo đúng lá số — số bên dưới là thứ tự đại vận, số trong ô là tuổi bắt đầu.</div>
+      <svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" xmlns="http://www.w3.org/2000/svg">
+        ${segHtml}
+        ${currentMarkerHtml}
+      </svg>
+    </div>`;
 }
 
 // Vận Hạn 10 Năm Tới — mỗi năm được gắn với đúng giai đoạn Đại Vận (và do đó
@@ -1517,6 +1632,8 @@ function renderPremiumReport(plan, r) {
 
   const { cuc, list: daiVanList } = generateDaiVan(r);
   document.getElementById('premCucName').textContent = cuc.ten;
+  const daiVanChartEl = document.getElementById('premDaiVanChart');
+  if (daiVanChartEl) daiVanChartEl.innerHTML = buildDaiVanTimelineHtml(daiVanList, r.birthdate);
   document.getElementById('premDaiVanList').innerHTML = daiVanList.map(d => `
     <div class="result-block">
       <div class="result-block-title">${d.ageRange} — ${d.title}</div>

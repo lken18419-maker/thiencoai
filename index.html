@@ -191,6 +191,10 @@
             <input type="text" id="birthplace" name="birthplace" placeholder="Hà Nội, Việt Nam" required>
           </div>
           <div class="form-group full">
+            <label for="natalCity">Tỉnh/thành gần nhất (để tính Cung Mọc chiêm tinh Tây phương)</label>
+            <select id="natalCity"></select>
+          </div>
+          <div class="form-group full">
             <label>Giới tính</label>
             <div class="gender-group">
               <button type="button" class="gender-btn active" data-gender="Nam">Nam</button>
@@ -250,6 +254,8 @@
             <p id="resHealth">—</p>
           </div>
         </div>
+        <div id="batTuBlock"></div>
+        <div id="westernBlock"></div>
         <div class="result-cta">
           <p>Đây là bản luận giải tóm tắt do AI tạo tự động. Muốn xem trọn đời chi tiết theo từng đại vận, tiểu vận và 12 cung?</p>
           <a href="#pricing" class="btn btn-primary">Xem bảng giá luận giải chi tiết</a>
@@ -411,6 +417,7 @@
             <div class="result-tag-val" id="numerBirthday">—</div>
           </div>
         </div>
+        <div id="numerSunBadge"></div>
         <div class="result-sections">
           <div class="result-block">
             <div class="result-block-title">🌟 Tổng Quan Con Số Chủ Đạo</div>
@@ -698,6 +705,7 @@
 
       <div id="premDaiVanBlock" style="display:none;">
         <h3 style="color:var(--gold); font-size:1.1rem; margin-bottom:14px;">🌀 10 Đại Vận — <span id="premCucName"></span></h3>
+        <div id="premDaiVanChart"></div>
         <div id="premDaiVanList" class="result-sections"></div>
       </div>
 
@@ -1021,7 +1029,9 @@
 <script src="numerology-engine.js"></script>
 <script src="numerology-pdf.js"></script>
 <script src="tuvi-content.js"></script>
+<script src="western-astrology.js"></script>
 <script src="script.js"></script>
+<script src="battu-engine.js"></script>
 <script src="tuvi-pdf.js"></script>
 </body>
 </html>
