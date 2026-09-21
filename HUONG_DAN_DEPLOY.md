@@ -61,6 +61,16 @@ const SUPABASE_ANON_KEY = 'eyJhbGci...';
 
 ## Phần 2 — Thanh toán MoMo / VNPay
 
+> **Cập nhật:** nút "Ví MoMo" ở checkout hiện KHÔNG còn gọi cổng API MoMo nữa —
+> MoMo không có cách nào nhận tiền qua API bằng số điện thoại cá nhân (bắt buộc
+> phải đăng ký MoMo Business tại business.momo.vn mới dùng được cổng thật ở
+> dưới). Vì vậy MoMo giờ hoạt động **giống hệt "Chuyển khoản ngân hàng"** —
+> hiện hướng dẫn chuyển tay tới số điện thoại trong `MOMO_CONFIG` (script.js,
+> cạnh `BANK_CONFIG`), khách tự mở app MoMo chuyển, rồi bạn duyệt đơn trong
+> admin.html như chuyển khoản. Phần Edge Function `momo-pay` bên dưới chỉ còn
+> ý nghĩa nếu sau này bạn đăng ký MoMo Business thật và muốn quay lại dùng cổng
+> API (khi đó cần tự đổi lại code checkout để redirect qua `momo-pay` như cũ).
+
 ### 2.1 Cài Supabase CLI
 ```bash
 npm install -g supabase

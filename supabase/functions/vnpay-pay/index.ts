@@ -2,7 +2,10 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type',
+  // supabase-js functions.invoke() tự gắn thêm authorization/apikey/x-client-info —
+  // thiếu các header này ở preflight khiến trình duyệt chặn request thật (curl vẫn
+  // qua bình thường vì curl không làm CORS preflight, dễ gây nhầm là function lỗi).
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
 const TMN_CODE    = Deno.env.get('VNP_TMN_CODE')    ?? 'DEMOV210';

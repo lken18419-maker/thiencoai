@@ -1053,6 +1053,36 @@ function bankTransferBlockHtml(orderCode, amount) {
     </div>`;
 }
 
+// MoMo cá nhân — không qua API cổng thanh toán (cần đăng ký MoMo Business mới
+// nhận được tiền thật qua API), thay bằng hướng dẫn chuyển tay giống ngân hàng.
+// Để trống thì hiện ghi chú sẽ liên hệ Zalo/SĐT gửi số sau.
+const MOMO_CONFIG = {
+  phone: '0937895520',
+  accountName: 'Đặng Bảo Ngọc'
+};
+
+function momoTransferBlockHtml(orderCode, amount) {
+  if (!MOMO_CONFIG.phone) {
+    return `<p style="color:#f0b429;font-size:0.82rem;margin:10px 0">⚠️ Đội ngũ sẽ liên hệ gửi số MoMo qua Zalo/SĐT bạn đã cung cấp.</p>`;
+  }
+  return `
+    <div style="text-align:center;margin:14px 0">
+      <p style="color:var(--text-dim);font-size:0.82rem;line-height:1.7">
+        Mở app MoMo, chọn <strong style="color:var(--text)">Chuyển tiền</strong> tới số điện thoại:<br>
+        <strong style="color:var(--gold)">${MOMO_CONFIG.phone}</strong> (${MOMO_CONFIG.accountName})<br>
+        Số tiền: <strong style="color:var(--gold)">${formatVND(amount)} ₫</strong> · Lời nhắn: <strong style="color:var(--gold)">${orderCode}</strong>
+      </p>
+    </div>`;
+}
+
+// Khối hướng dẫn thanh toán thủ công dùng chung cho màn "Mở khóa thành công" —
+// trả về '' cho vnpay (vẫn redirect qua cổng thật) hoặc khi không nhận diện được.
+function manualPaymentBlockHtml(payment, orderCode, amount) {
+  if (payment === 'transfer') return bankTransferBlockHtml(orderCode, amount);
+  if (payment === 'momo') return momoTransferBlockHtml(orderCode, amount);
+  return '';
+}
+
 // Gói mở khóa một lần (không phải thuê bao định kỳ)
 const PRICING = {
   'Luận giải toàn bộ': { price: 73000, originalPrice: 315000, save: 77, desc: 'Nền tảng lá số, tính cách và 10 đại vận' },
@@ -1194,8 +1224,10 @@ async function submitCheckout(e) {
     } catch { /* không chặn luồng nếu bảng chưa được tạo */ }
   }
 
-  // MoMo / VNPay → chuyển hướng sang cổng thanh toán thật
-  if (payment === 'momo' || payment === 'vnpay') {
+  // VNPay → chuyển hướng sang cổng thanh toán thật. MoMo KHÔNG qua cổng API (cần
+  // đăng ký MoMo Business mới nhận được tiền thật) — xử lý như "chuyển khoản tay"
+  // ở dưới, dùng chung nhánh với "transfer".
+  if (payment === 'vnpay') {
     const payUrl = await createPaymentUrl(payment, orderCode, amount);
     if (payUrl) {
       window.location.href = payUrl;
@@ -1203,13 +1235,14 @@ async function submitCheckout(e) {
     }
   }
 
-  // Tới đây nghĩa là: chọn "Chuyển khoản" (không cần redirect), hoặc cổng
-  // MoMo/VNPay thật đã cấu hình nhưng gọi API thất bại (mock demo luôn redirect ở trên)
+  // Tới đây nghĩa là: chọn "Chuyển khoản"/"MoMo" (hướng dẫn chuyển tay, không
+  // redirect), hoặc VNPay thật đã cấu hình nhưng gọi API thất bại
   submitBtn.disabled = false;
   submitBtn.textContent = 'Xác Nhận Mở Khóa';
 
   const paymentLabel = { momo: 'MoMo', vnpay: 'VNPay', transfer: 'Chuyển khoản ngân hàng' }[payment];
-  const gatewayNote = (payment === 'momo' || payment === 'vnpay')
+  const isManualPayment = payment === 'transfer' || payment === 'momo';
+  const gatewayNote = (payment === 'vnpay')
     ? '<p style="color:#f0b429;font-size:0.82rem;margin-top:10px">⚠️ Cổng thanh toán gặp sự cố khi kết nối. Đơn của bạn đã được ghi nhận, đội ngũ sẽ liên hệ xác nhận thủ công.</p>'
     : '';
 
@@ -1221,11 +1254,11 @@ async function submitCheckout(e) {
       // tới khi bạn kiểm tra đã nhận được tiền và duyệt đơn trong admin.html —
       // KHÔNG mở khóa PDF ngay, kể cả khi đã có lastNumerologyResult.
       const lookupUrl = `tra-cuu-don-hang.html?order=${orderCode}`;
-      confirmLine = payment === 'transfer'
-        ? `Đơn của bạn đang <strong>chờ xác nhận thanh toán</strong>. Sau khi chuyển khoản đúng nội dung bên dưới, đội ngũ sẽ duyệt đơn trong vài giờ.`
+      confirmLine = isManualPayment
+        ? `Đơn của bạn đang <strong>chờ xác nhận thanh toán</strong>. Sau khi chuyển tiền đúng nội dung bên dưới, đội ngũ sẽ duyệt đơn trong vài giờ.`
         : `Đơn của bạn đang <strong>chờ xác nhận thanh toán</strong>. Đội ngũ sẽ liên hệ qua Zalo/SĐT <strong>${phone}</strong> để xác nhận ${paymentLabel}.`;
       reportAction = `
-        ${payment === 'transfer' ? bankTransferBlockHtml(orderCode, amount) : ''}
+        ${manualPaymentBlockHtml(payment, orderCode, amount)}
         <p style="color:var(--text-dim); font-size:0.85rem; margin:4px 0 10px">Lưu lại mã đơn ở trên, hoặc quay lại link này bất cứ lúc nào để tải file PDF ngay khi đơn được duyệt:</p>
         <a href="${lookupUrl}" class="btn-submit" style="text-decoration:none; box-sizing:border-box; display:flex;">🔍 Tra Cứu Đơn Hàng Này</a>
         <button type="button" class="btn btn-secondary" style="width:100%;justify-content:center;margin-top:10px" onclick="closeCheckoutModal()">Đóng</button>`;
@@ -1247,11 +1280,11 @@ async function submitCheckout(e) {
     // tới khi bạn duyệt đơn trong admin.html — KHÔNG hiện báo cáo chi tiết
     // ngay, kể cả khi đã có lastTuviResult.
     const lookupUrl = `tra-cuu-don-hang.html?order=${orderCode}`;
-    confirmLine = payment === 'transfer'
-      ? `Đơn của bạn đang <strong>chờ xác nhận thanh toán</strong>. Sau khi chuyển khoản đúng nội dung bên dưới, đội ngũ sẽ duyệt đơn trong vài giờ.`
+    confirmLine = isManualPayment
+      ? `Đơn của bạn đang <strong>chờ xác nhận thanh toán</strong>. Sau khi chuyển tiền đúng nội dung bên dưới, đội ngũ sẽ duyệt đơn trong vài giờ.`
       : `Đơn của bạn đang <strong>chờ xác nhận thanh toán</strong>. Đội ngũ sẽ liên hệ qua Zalo/SĐT <strong>${phone}</strong> để xác nhận ${paymentLabel}.`;
     reportAction = `
-      ${payment === 'transfer' ? bankTransferBlockHtml(orderCode, amount) : ''}
+      ${manualPaymentBlockHtml(payment, orderCode, amount)}
       <p style="color:var(--text-dim); font-size:0.85rem; margin:4px 0 10px">Lưu lại mã đơn ở trên, hoặc quay lại link này bất cứ lúc nào để xem báo cáo chi tiết ngay khi đơn được duyệt:</p>
       <a href="${lookupUrl}" class="btn-submit" style="text-decoration:none; box-sizing:border-box; display:flex;">🔍 Tra Cứu Đơn Hàng Này</a>
       <button type="button" class="btn btn-secondary" style="width:100%;justify-content:center;margin-top:10px" onclick="closeCheckoutModal()">Đóng</button>`;
